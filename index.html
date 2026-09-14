@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cifra — Diário de projetos · MEIA ISEP</title>
+<meta name="description" content="Diário de projetos de cinco alunos do Mestrado em Engenharia de Inteligência Artificial do ISEP. Uma entrada por semana, um repositório por projeto.">
+
+<!-- O sistema de design Broadsheet, tal como veio do Claude Design. O bundle traz
+     os filtros de separação e o driver da prensa, que publica --press-nx/--press-ny
+     para as chapas do título e dos numerais. Nada aqui é editado à mão. -->
+<link rel="stylesheet" href="_ds/broadsheet-527eef35-994c-456d-b71f-54ce089487b8/styles.css">
+<script src="_ds/broadsheet-527eef35-994c-456d-b71f-54ce089487b8/_ds_bundle.js"></script>
+
+<link rel="stylesheet" href="assets/css/cifra.css">
+</head>
+<body>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;font-family:var(--font-body)">
+
+  <header style="display:flex;align-items:baseline;gap:var(--space-4);flex-wrap:wrap;padding:var(--space-4) clamp(20px,5vw,64px) var(--space-2);max-width:1240px;width:100%;margin:0 auto">
+    <a href="#/" style="font-family:var(--font-heading);font-weight:600;font-size:21px;letter-spacing:-0.02em;text-decoration:none;color:var(--color-text)">Cifra<span style="color:var(--color-accent-2)">.</span></a>
+    <nav id="cifra-nav" style="display:flex;gap:var(--space-4);margin-left:auto;align-items:baseline"></nav>
+  </header>
+
+  <!-- A mobília de primeira página: o par de filetes grosso-fino em volta da
+       linha de data, a uma tinta cheia. -->
+  <div style="height:3px;background:var(--color-text);max-width:1240px;width:100%;margin:0 auto"></div>
+  <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:6px clamp(20px,5vw,64px);max-width:1240px;width:100%;margin:0 auto;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);border-bottom:1px solid var(--color-text)">
+    <span>ISEP — Mestrado em Engenharia de Inteligência Artificial</span>
+    <span>Diário de projetos</span>
+    <span id="cifra-edition"></span>
+  </div>
+
+  <main id="cifra-main" style="flex:1;max-width:1240px;width:100%;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(20px,5vw,64px) 80px"></main>
+
+  <footer style="border-top:1px solid var(--color-text);max-width:1240px;width:100%;margin:0 auto;padding:var(--space-3) clamp(20px,5vw,64px) var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">
+    <span>Cifra — diário de projetos</span>
+    <span style="margin-left:auto">MEIA · ISEP · 2025/26</span>
+  </footer>
+</div>
+
+<script src="assets/js/content.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
