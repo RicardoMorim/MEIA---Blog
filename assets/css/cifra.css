@@ -27,10 +27,37 @@ a:hover { color: var(--color-accent-700); }
 .cifra-proj { transition: background .2s ease, color .2s ease; }
 .cifra-proj:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
 
+.cifra-member-photo { overflow: hidden; }
+.cifra-member-photo-clean img {
+  transform: scale(1.55);
+  transform-origin: 62% 31%;
+}
+
+.cifra-linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: var(--font-heading-weight);
+  line-height: 1;
+  text-decoration: none;
+  transition: background .2s ease, transform .2s ease;
+}
+.cifra-linkedin:hover { background: var(--color-accent-700); color: var(--color-bg); transform: translateY(-1px); }
+.cifra-linkedin:active { transform: translateY(0); }
+
 /* O sistema desliga as suas próprias animações sob prefers-reduced-motion (ver
    o driver da prensa em _ds_bundle.js); a entrada das vistas acompanha. */
 @media (prefers-reduced-motion: reduce) {
   .cifra-view { animation: none; }
   .cifra-card { transition: none; }
   .cifra-card:hover { transform: none; }
+  .cifra-linkedin { transition: none; }
+  .cifra-linkedin:hover { transform: none; }
 }

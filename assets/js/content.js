@@ -38,9 +38,12 @@
       },
       {
         name: 'Pedro Campos',
-        role: 'Modelação',
-        bio: 'Trabalha os modelos, do gradient boosting ao autoencoder, e discute cada hiperparâmetro até ao fim.',
-        user: 'pedrocampos'
+        role: 'Software Engineer - AI Security',
+        bio: 'I completed my Bachelor\'s degree in Informatics Engineering in 2024. After working in application security, I joined Snyk, where I am now a Software Engineer focused on AI security. I decided to join MEIA to strengthen my foundations in artificial intelligence.',
+        user: 'pedrocampos',
+        photo: 'assets/img/pedro-campos.jpg',
+        photoClean: true,
+        linkedin: 'https://www.linkedin.com/in/pedro-m-campos/'
       },
       {
         name: 'Pedro Vieira',

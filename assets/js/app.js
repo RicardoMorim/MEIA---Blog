@@ -205,10 +205,15 @@
         '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:clamp(20px,3vw,38px)">' +
           MODEL.members.map(function (m) {
             return '<li>' +
-              '<figure class="halftone" style="margin:0 0 var(--space-3);aspect-ratio:4/5;background:var(--color-surface)">' +
+              '<figure class="' + (m.photoClean ? 'cifra-member-photo cifra-member-photo-clean' : 'halftone') + '" style="margin:0 0 var(--space-3);aspect-ratio:4/5;background:var(--color-surface)">' +
                 image(m.photo, m.photoAlt) +
               '</figure>' +
-              '<h3 style="font-size:19px;margin:0 0 2px;letter-spacing:-0.01em">' + esc(m.name) + '</h3>' +
+              '<div style="display:flex;align-items:center;gap:var(--space-1);margin:0 0 2px">' +
+                '<h3 style="font-size:19px;margin:0;letter-spacing:-0.01em">' + esc(m.name) + '</h3>' +
+                (m.linkedin
+                  ? '<a class="cifra-linkedin" href="' + esc(m.linkedin) + '" target="_blank" rel="noreferrer" aria-label="LinkedIn de ' + esc(m.name) + '" title="LinkedIn de ' + esc(m.name) + '"><span aria-hidden="true">in</span></a>'
+                  : '') +
+              '</div>' +
               '<p style="margin:0 0 6px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700)">' + esc(m.role) + '</p>' +
               '<p style="margin:0;font-size:14px;line-height:1.5;color:color-mix(in srgb, var(--color-text) 78%, transparent);text-wrap:pretty">' + esc(m.bio) + '</p>' +
             '</li>';
