@@ -226,31 +226,6 @@ h1[tabindex="-1"]:focus-visible { outline: none; }
   }
 }
 
-.cairn-linkedin {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--space-4);
-  height: var(--space-4);
-  border-radius: var(--radius-lg);
-  background: var(--color-accent-700);
-  color: var(--color-bg);
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  text-decoration: none;
-  transition: background .2s ease, transform .2s ease;
-}
-
-.cairn-linkedin:hover {
-  background: var(--color-text);
-  color: var(--color-bg);
-  transform: translateY(-1px);
-}
-
-.cairn-linkedin:active { transform: translateY(0); }
-
 @keyframes cairnIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
@@ -272,8 +247,6 @@ h1[tabindex="-1"]:focus-visible { outline: none; }
 @media (prefers-reduced-motion: reduce) {
   .cairn-view { animation: none; }
   .cairn-card,
-  .cairn-proj,
-  .cairn-linkedin { transition: none; }
-  .cairn-card:hover,
-  .cairn-linkedin:hover { transform: none; }
+  .cairn-proj { transition: none; }
+  .cairn-card:hover { transform: none; }
 }

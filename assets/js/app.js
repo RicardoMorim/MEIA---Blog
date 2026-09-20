@@ -5,9 +5,10 @@
  * ser partilhada:
  *
  *   #/                                 início
- *   #/projects                         lista de projetos
- *   #/projects/:projeto                diário de um projeto
- *   #/projects/:projeto/week-01        uma entrada
+ *   #/challenges                       lista de challenges
+ *   #/challenges/:challenge            detalhe de um challenge
+ *   #/challenges/:challenge/week-01    uma entrada
+ *   #/reports                          relatórios semanais
  *   #/contacts                         contactos
  *
  * O encaminhamento é por fragmento (e não por caminho) para que o site funcione
@@ -66,28 +67,19 @@
   /* Porta de `renderVals()` do design: tudo o que as vistas mostram é calculado
      aqui uma vez, a partir do conteúdo em bruto. */
   function derive() {
-    var org = DATA.githubOrg;
-
     var projects = DATA.projects.map(function (p, pi) {
-      var repoName = p.repo.split('/')[1];
-      var repoLabel = org + '/' + repoName;
-      var repoUrl = 'https://github.com/' + repoLabel;
-
       var weeks = p.weeks.map(function (w, i) {
         var n = pad2(i + 1);
         return Object.assign({}, w, {
           num: n,
           isLatest: i === p.weeks.length - 1,
           kicker: 'Week ' + n,
-          commits: repoUrl + '/commits/main',
-          href: '#/projects/' + p.id + '/week-' + n
+          href: '#/challenges/' + p.id + '/week-' + n
         });
       });
 
       return Object.assign({}, p, {
         weeks: weeks,
-        repoLabel: repoLabel,
-        repoUrl: repoUrl,
         num: pad2(pi + 1),
         tagClass: TAG_FOR[p.status] || 'tag tag-neutral',
         isCurrent: p.status === 'In progress',
@@ -98,7 +90,7 @@
         range: weeks.length === 0
           ? p.period
           : weeks[0].date + ' — ' + weeks[weeks.length - 1].date,
-        href: '#/projects/' + p.id
+        href: '#/challenges/' + p.id
       });
     });
 
@@ -115,19 +107,20 @@
         email: email,
         mailto: 'mailto:' + email,
         gh: 'https://github.com/' + m.user,
-        ghLabel: 'github.com/' + m.user
+        ghLabel: 'github.com/' + m.user,
+        linkedinLabel: m.linkedin
+          ? m.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
+          : ''
       });
     });
 
     return {
       projects: projects,
+      reports: DATA.reports || [],
       members: members,
       currentProject: current,
       projectCount: projects.length,
-      entryCount: projects.reduce(function (n, p) { return n + p.weeks.length; }, 0),
-      edition: 'Updated ' + (current.weeks.length
-        ? current.weeks[current.weeks.length - 1].date
-        : current.period)
+      entryCount: projects.reduce(function (n, p) { return n + p.weeks.length; }, 0)
     };
   }
 
@@ -138,10 +131,11 @@
   function parseRoute(hash) {
     var path = String(hash || '').replace(/^#/, '').replace(/^\/*/, '').replace(/\/+$/, '');
     if (path === '') return { view: 'home' };
+    if (path === 'reports') return { view: 'reports' };
     if (path === 'contacts') return { view: 'contact' };
 
     var parts = path.split('/');
-    if (parts[0] !== 'projects') return { view: 'notFound' };
+    if (parts[0] !== 'challenges' && parts[0] !== 'projects') return { view: 'notFound' };
     if (parts.length === 1) return { view: 'projects' };
 
     var project = MODEL.projects.filter(function (p) { return p.id === parts[1]; })[0];
@@ -160,40 +154,22 @@
   /* ------------------------------------------------------------------ vistas */
 
   function viewHome() {
-    var stat = function (label, value, small) {
-      return '<div>' +
-        '<dt style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin-bottom:4px">' + label + '</dt>' +
-        '<dd style="margin:0;' + (small
-          ? 'font-size:15px;line-height:1.35'
-          : 'font-family:var(--font-heading);font-size:34px;line-height:1') + '">' + value + '</dd>' +
-        '</div>';
-    };
-
     return '<div class="cairn-view">' +
-      '<section style="display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,64px);align-items:flex-end">' +
-        '<div style="flex:1 1 420px;min-width:0">' +
-          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-3)">Five students · one year · several projects</p>' +
-          '<h1 style="font-size:clamp(46px,7vw,86px);line-height:0.98;letter-spacing:-0.03em;margin:0 0 var(--space-4);max-width:11ch">Project diary</h1>' +
+      '<section>' +
+        '<div style="max-width:720px">' +
+          '<h1 style="font-size:clamp(46px,7vw,86px);line-height:0.98;letter-spacing:-0.03em;margin:0 0 var(--space-4);max-width:11ch">Our mission</h1>' +
           '<p style="font-size:19px;line-height:1.5;max-width:56ch;margin:0 0 var(--space-4);text-wrap:pretty">' +
-            'We are five students on the MSc in Artificial Intelligence Engineering at ISEP. Every project we take on has its own diary here — one entry per week — and its own repository on GitHub.' +
+            'We are five students on the MSc in Artificial Intelligence Engineering at ISEP. This blog documents our challenges, weekly progress and reports throughout the academic year.' +
           '</p>' +
           '<div style="display:flex;gap:var(--space-2);flex-wrap:wrap">' +
-            '<a class="btn btn-primary" href="#/projects">See the projects</a>' +
-            '<a class="btn btn-secondary" href="' + esc(MODEL.currentProject.repoUrl) + '" target="_blank" rel="noreferrer">Current project on GitHub ↗</a>' +
+            '<a class="btn btn-primary" href="#/challenges">See the challenges</a>' +
           '</div>' +
         '</div>' +
-        '<dl style="margin:0;flex:1 1 260px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--space-4) var(--space-3);align-self:flex-end;padding-bottom:6px">' +
-          stat('Projects', MODEL.projectCount) +
-          stat('Entries written', MODEL.entryCount) +
-          stat('In progress', esc(MODEL.currentProject.name), true) +
-          stat('Academic year', '2026/27<br>DEI — ISEP', true) +
-        '</dl>' +
       '</section>' +
 
       '<section style="margin-top:clamp(56px,8vw,104px)">' +
         '<div style="display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-6)">' +
           '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">The team</h2>' +
-          '<span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">five people, five fronts</span>' +
         '</div>' +
         '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:clamp(20px,3vw,38px)">' +
           MODEL.members.map(function (m) {
@@ -201,12 +177,7 @@
               '<figure class="cairn-frame' + (m.photoClean ? ' cairn-frame-zoom' : '') + '" style="margin:0 0 var(--space-3);aspect-ratio:4/5;background:var(--color-surface)">' +
                 image(m.photo, m.photoAlt) +
               '</figure>' +
-              '<div style="display:flex;align-items:center;gap:var(--space-1);margin:0 0 2px">' +
-                '<h3 style="font-size:19px;margin:0;letter-spacing:-0.01em">' + esc(m.name) + '</h3>' +
-                (m.linkedin
-                  ? '<a class="cairn-linkedin" href="' + esc(m.linkedin) + '" target="_blank" rel="noreferrer" aria-label="LinkedIn of ' + esc(m.name) + '" title="LinkedIn of ' + esc(m.name) + '"><span aria-hidden="true">in</span></a>'
-                  : '') +
-              '</div>' +
+              '<h3 style="font-size:19px;margin:0 0 2px;letter-spacing:-0.01em">' + esc(m.name) + '</h3>' +
               '<p style="margin:0 0 6px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700)">' + esc(m.role) + '</p>' +
               '<p style="margin:0;font-size:14px;line-height:1.5;color:color-mix(in srgb, var(--color-text) 78%, transparent);text-wrap:pretty">' + esc(m.bio) + '</p>' +
             '</li>';
@@ -216,8 +187,8 @@
 
       '<section style="margin-top:clamp(56px,8vw,104px)">' +
         '<div style="display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap">' +
-          '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">Projects</h2>' +
-          '<a href="#/projects" style="font-size:14px;margin-left:auto">See all →</a>' +
+          '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">Challenges</h2>' +
+          '<a href="#/challenges" style="font-size:14px;margin-left:auto">See all →</a>' +
         '</div>' +
         '<ul class="cairn-cards">' +
           MODEL.projects.map(function (p) {
@@ -241,10 +212,7 @@
   function viewProjects() {
     return '<div class="cairn-view">' +
       '<section style="display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end;margin-bottom:clamp(36px,5vw,64px)">' +
-        '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0;flex:1 1 300px;min-width:0">Projects</h1>' +
-        '<p style="margin:0;flex:1 1 280px;min-width:0;font-size:16px;line-height:1.55;max-width:46ch;color:color-mix(in srgb, var(--color-text) 80%, transparent)">' +
-          'Each project has its own repository and its own weekly diary, independent of one another. Pick one to open the diary.' +
-        '</p>' +
+        '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0;flex:1 1 300px;min-width:0">Challenges</h1>' +
       '</section>' +
       '<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">' +
         MODEL.projects.map(function (p) {
@@ -272,22 +240,21 @@
       '<div style="padding:clamp(32px,6vw,72px) 0;max-width:46ch">' +
         '<h2 style="font-size:26px;margin:0 0 var(--space-2);letter-spacing:-0.02em">No entries yet</h2>' +
         '<p style="margin:0 0 var(--space-4);font-size:16px;line-height:1.6;color:color-mix(in srgb, var(--color-text) 75%, transparent)">' +
-          'The project starts in ' + esc(p.period) + '. The first entry appears here at the end of the first week of work.' +
+          'The first entry for this challenge will appear here once the work begins.' +
         '</p>' +
-        '<a class="btn btn-ghost" href="#/projects">See the other projects</a>' +
+        '<a class="btn btn-ghost" href="#/challenges">See the challenges</a>' +
       '</div>';
 
     return '<div class="cairn-view">' +
-      '<a href="#/projects" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Projects</a>' +
+      '<a href="#/challenges" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Challenges</a>' +
       '<section style="display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end;margin:var(--space-4) 0 clamp(32px,5vw,56px)">' +
         '<div style="flex:2 1 420px;min-width:0">' +
-          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">Diary · ' + esc(p.course) + '</p>' +
+          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">Challenge · ' + esc(p.course) + '</p>' +
           '<h1 style="font-size:clamp(38px,5.6vw,70px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-3);max-width:16ch;text-wrap:balance">' + esc(p.name) + '</h1>' +
           '<p class="cairn-prose" style="margin:0;font-size:18px;line-height:1.55;max-width:56ch">' + esc(p.long) + '</p>' +
         '</div>' +
         '<div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:var(--space-3);align-items:flex-start">' +
           '<span class="' + p.tagClass + '">' + esc(p.status) + '</span>' +
-          '<a class="btn btn-secondary" href="' + esc(p.repoUrl) + '" target="_blank" rel="noreferrer">' + esc(p.repoLabel) + ' ↗</a>' +
         '</div>' +
       '</section>' +
 
@@ -349,7 +316,7 @@
 
   function viewEntry(p, entry) {
     return '<article class="cairn-view">' +
-      '<a href="' + p.href + '" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Diary · ' + esc(p.name) + '</a>' +
+      '<a href="' + p.href + '" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Challenge · ' + esc(p.name) + '</a>' +
       '<header style="margin:var(--space-4) 0 clamp(32px,5vw,56px);display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end">' +
         '<div style="flex:2 1 420px;min-width:0">' +
           '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">' + esc(entry.kicker) + ' · ' + esc(entry.date) + '</p>' +
@@ -370,18 +337,37 @@
       '</div>' +
 
       '<footer style="margin-top:clamp(48px,7vw,88px);padding-top:var(--space-4);border-top:1px solid var(--color-text);display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center">' +
-        '<a class="btn btn-secondary" href="' + esc(entry.commits) + '" target="_blank" rel="noreferrer">Commits from this week ↗</a>' +
-        '<a class="btn btn-ghost" href="' + p.href + '">Back to the diary</a>' +
+        '<a class="btn btn-ghost" href="' + p.href + '">Back to the challenge</a>' +
       '</footer>' +
     '</article>';
   }
 
+  function viewReports() {
+    return '<div class="cairn-view">' +
+      '<section style="display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end;margin-bottom:clamp(36px,5vw,64px)">' +
+        '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0;flex:1 1 300px;min-width:0">Reports</h1>' +
+      '</section>' +
+      '<ul class="cairn-cards">' +
+        MODEL.reports.map(function (report, i) {
+          return '<li>' +
+            '<article class="card elev-sm" style="height:100%;padding:var(--space-4);gap:var(--space-3)">' +
+              '<span style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)">' +
+                numeral(pad2(i + 1), false, 'font-size:40px') +
+                '<span class="tag tag-outline">' + esc(report.status) + '</span>' +
+              '</span>' +
+              '<h2 class="card-title" style="font-size:23px;line-height:1.15;letter-spacing:-0.015em;margin:0">' + esc(report.title) + '</h2>' +
+              '<p class="card-body" style="font-size:14px;line-height:1.55">' + esc(report.summary) + '</p>' +
+              '<span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-2)">' + esc(report.period) + ' · Coming soon</span>' +
+            '</article>' +
+          '</li>';
+        }).join('') +
+      '</ul>' +
+    '</div>';
+  }
+
   function viewContact() {
     return '<div class="cairn-view">' +
-      '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-4)">Contacts</h1>' +
-      '<p style="font-size:18px;line-height:1.55;max-width:50ch;margin:0 0 clamp(36px,5vw,64px);color:color-mix(in srgb, var(--color-text) 80%, transparent)">' +
-        'Questions, ideas, datasets to share, or the urge to tell us our architecture is wrong — write to any of us.' +
-      '</p>' +
+      '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0 0 clamp(36px,5vw,64px)">Contacts</h1>' +
       '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-6) clamp(24px,4vw,56px)">' +
         MODEL.members.map(function (m) {
           return '<li>' +
@@ -390,21 +376,15 @@
             '<p style="margin:0;font-size:15px;line-height:1.6">' +
               '<a href="' + esc(m.mailto) + '">' + esc(m.email) + '</a><br>' +
               '<a href="' + esc(m.gh) + '" target="_blank" rel="noreferrer">' + esc(m.ghLabel) + '</a>' +
+              (m.linkedin
+                ? '<br><a href="' + esc(m.linkedin) + '" target="_blank" rel="noreferrer">' + esc(m.linkedinLabel) + '</a>'
+                : '') +
             '</p>' +
           '</li>';
         }).join('') +
       '</ul>' +
       '<div style="margin-top:clamp(48px,7vw,88px);padding-top:var(--space-4);border-top:1px solid var(--color-text)">' +
-        '<h2 style="font-size:24px;margin:0 0 var(--space-3);letter-spacing:-0.02em">Repositories</h2>' +
-        '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-3) clamp(24px,4vw,56px);font-size:15px;line-height:1.6">' +
-          MODEL.projects.map(function (p) {
-            return '<li>' +
-              '<span style="display:block;font-family:var(--font-heading)">' + esc(p.name) + '</span>' +
-              '<a href="' + esc(p.repoUrl) + '" target="_blank" rel="noreferrer">' + esc(p.repoLabel) + ' ↗</a>' +
-            '</li>';
-          }).join('') +
-        '</ul>' +
-        '<p style="margin:var(--space-6) 0 0;font-size:15px;line-height:1.6"><strong style="font-family:var(--font-heading)">ISEP</strong><br>Rua Dr. António Bernardino de Almeida, 431<br>4249-015 Porto</p>' +
+        '<p style="margin:0;font-size:15px;line-height:1.6"><strong style="font-family:var(--font-heading)">ISEP</strong><br>Rua Dr. António Bernardino de Almeida, 431<br>4249-015 Porto</p>' +
       '</div>' +
     '</div>';
   }
@@ -416,10 +396,10 @@
       '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-3)">Page not found</p>' +
       '<h1 style="font-size:clamp(36px,5vw,60px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-3)">This entry does not exist</h1>' +
       '<p style="margin:0 0 var(--space-4);font-size:17px;line-height:1.6;color:color-mix(in srgb, var(--color-text) 75%, transparent)">' +
-        'The link may be wrong, or the entry has not been written yet. Each project diary has the full list.' +
+        'The link may be wrong, or the entry has not been written yet. Visit Challenges or Reports to see what is available.' +
       '</p>' +
       '<div style="display:flex;gap:var(--space-2);flex-wrap:wrap">' +
-        '<a class="btn btn-primary" href="#/projects">See the projects</a>' +
+        '<a class="btn btn-primary" href="#/challenges">See the challenges</a>' +
         '<a class="btn btn-ghost" href="#/">Back to the start</a>' +
       '</div>' +
     '</div>';
@@ -428,21 +408,23 @@
   /* ------------------------------------------------------------ renderização */
 
   var TITLES = {
-    home: 'Cairn — Project diary · MEIA ISEP',
-    projects: 'Projects — Cairn',
+    home: 'Cairn — Project blog · MEIA ISEP',
+    projects: 'Challenges — Cairn',
+    reports: 'Reports — Cairn',
     contact: 'Contacts — Cairn',
     notFound: 'Page not found — Cairn'
   };
 
   function navMarkup(view) {
-    /* "Projects" fica marcado em toda a secção do diário, como no design. */
+    /* "Challenges" fica marcado em toda a secção do trabalho. */
     var onProjects = (view === 'projects' || view === 'project' || view === 'entry');
     var link = function (href, label, active) {
       return '<a href="' + href + '"' + (active ? ' aria-current="page"' : '') +
         ' style="font-size:14px;text-decoration:none;color:inherit">' + label + '</a>';
     };
     return link('#/', 'Home', view === 'home') +
-      link('#/projects', 'Projects', onProjects) +
+      link('#/challenges', 'Challenges', onProjects) +
+      link('#/reports', 'Reports', view === 'reports') +
       link('#/contacts', 'Contacts', view === 'contact');
   }
 
@@ -454,14 +436,13 @@
       case 'projects': body = viewProjects(); break;
       case 'project': body = viewProject(route.project); break;
       case 'entry': body = viewEntry(route.project, route.entry); break;
+      case 'reports': body = viewReports(); break;
       case 'contact': body = viewContact(); break;
       case 'notFound': body = viewNotFound(); break;
       default: body = viewHome();
     }
 
     document.getElementById('cairn-nav').innerHTML = navMarkup(route.view);
-    document.getElementById('cairn-edition').textContent = MODEL.edition;
-
     var main = document.getElementById('cairn-main');
     main.innerHTML = body;
 

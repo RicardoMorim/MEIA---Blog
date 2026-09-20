@@ -1,4 +1,4 @@
-# Cairn — diário de projetos
+# Cairn — blogue de projetos
 
 Blogue de projetos de cinco alunos do **Mestrado em Engenharia de Inteligência
 Artificial do ISEP**. Cada projeto tem o seu diário semanal e o seu repositório.
@@ -43,9 +43,10 @@ de reescrita. Cada entrada tem endereço próprio e pode ser partilhada:
 
 ```
 #/                               início
-#/projects                       lista de projetos
-#/projects/cairn-ids             diário de um projeto
-#/projects/cairn-ids/week-03     uma entrada
+#/challenges                     lista de challenges
+#/challenges/challenge-01        página de um challenge
+#/challenges/challenge-01/week-01 uma entrada
+#/reports                        relatórios semanais
 #/contacts                       contactos
 ```
 
@@ -66,7 +67,7 @@ laranja.
   date: '14 Sep 2026',          // dia, mês abreviado em inglês, ano
   author: 'Who wrote it',
   tags: ['tag', 'another'],
-  excerpt: 'One or two lines for the diary card.',
+  excerpt: 'One or two lines for the weekly update card.',
   lead: 'The opening sentence, highlighted at the top of the entry.',
   blocks: [
     T('Summary', 'A paragraph.'),
