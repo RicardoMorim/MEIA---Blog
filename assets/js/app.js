@@ -1,14 +1,14 @@
-/* Cifra — router e renderização.
+/* Cairn — router e renderização.
  *
  * O protótipo de design era um único ecrã com estado interno e ligações a "#".
  * Aqui as vistas passam a ter URL próprio, para que uma entrada do diário possa
  * ser partilhada:
  *
- *   #/                                  início
- *   #/projetos                          lista de projetos
- *   #/projetos/:projeto                 diário de um projeto
- *   #/projetos/:projeto/semana-01       uma entrada
- *   #/contactos                         contactos
+ *   #/                                 início
+ *   #/projects                         lista de projetos
+ *   #/projects/:projeto                diário de um projeto
+ *   #/projects/:projeto/week-01        uma entrada
+ *   #/contacts                         contactos
  *
  * O encaminhamento é por fragmento (e não por caminho) para que o site funcione
  * no GitHub Pages sem regras de reescrita nem 404.html.
@@ -16,14 +16,14 @@
 (function () {
   'use strict';
 
-  var DATA = window.CIFRA;
+  var DATA = window.CAIRN;
   var IMG_DIR = 'assets/img/';
 
   /* Classe de etiqueta por estado do projeto (o mapa `tagFor` do design). */
   var TAG_FOR = {
-    'A decorrer': 'tag tag-accent',
-    'Por arrancar': 'tag tag-outline',
-    'Planeado': 'tag tag-neutral'
+    'In progress': 'tag tag-accent',
+    'Starting soon': 'tag tag-outline',
+    'Planned': 'tag tag-neutral'
   };
 
   /* ---------------------------------------------------------------- helpers */
@@ -41,21 +41,13 @@
     return String(n).length < 2 ? '0' + n : String(n);
   }
 
-  /* As construções de chapa (.cmyk-head, .cmyk-num) repetem o mesmo texto quatro
-     vezes: o papel, que é o que a leitura assistiva encontra, e três chapas de
-     processo escondidas. */
-  function plates(className, text, style) {
-    var t = esc(text);
-    return '<span class="' + className + '"' + (style ? ' style="' + style + '"' : '') + '>' +
-      '<span class="paper">' + t + '</span>' +
-      '<span class="plate plate-c" aria-hidden="true">' + t + '</span>' +
-      '<span class="plate plate-m" aria-hidden="true">' + t + '</span>' +
-      '<span class="plate plate-y" aria-hidden="true">' + t + '</span>' +
-      '</span>';
+  function numeral(text, current, style) {
+    return '<span class="cairn-num' + (current ? ' cairn-num-current' : '') + '"' +
+      (style ? ' style="' + style + '"' : '') + '>' + esc(text) + '</span>';
   }
 
   /* Uma imagem que desaparece quando o ficheiro não existe, deixando à vista a
-     caixa de papel que o design já desenha por baixo. */
+     moldura vazia em vez do ícone de imagem partida. */
   function image(src, alt) {
     return '<img data-optional src="' + esc(src) + '" alt="' + esc(alt) + '" ' +
       'loading="lazy" style="width:100%;height:100%;object-fit:cover">';
@@ -85,9 +77,10 @@
         var n = pad2(i + 1);
         return Object.assign({}, w, {
           num: n,
-          kicker: 'Semana ' + n,
+          isLatest: i === p.weeks.length - 1,
+          kicker: 'Week ' + n,
           commits: repoUrl + '/commits/main',
-          href: '#/projetos/' + p.id + '/semana-' + n
+          href: '#/projects/' + p.id + '/week-' + n
         });
       });
 
@@ -97,25 +90,30 @@
         repoUrl: repoUrl,
         num: pad2(pi + 1),
         tagClass: TAG_FOR[p.status] || 'tag tag-neutral',
+        isCurrent: p.status === 'In progress',
         isEmpty: weeks.length === 0,
         entriesLabel: weeks.length === 0
-          ? 'Sem entradas'
-          : weeks.length + (weeks.length === 1 ? ' entrada' : ' entradas'),
+          ? 'No entries'
+          : weeks.length + (weeks.length === 1 ? ' entry' : ' entries'),
         range: weeks.length === 0
           ? p.period
           : weeks[0].date + ' — ' + weeks[weeks.length - 1].date,
-        href: '#/projetos/' + p.id
+        href: '#/projects/' + p.id
       });
     });
 
-    var current = projects.filter(function (p) { return p.status === 'A decorrer'; })[0] || projects[0];
+    var current = projects.filter(function (p) { return p.status === 'In progress'; })[0] || projects[0];
 
     var members = DATA.members.map(function (m, i) {
+      /* O email é independente do utilizador do GitHub: no ISEP costuma ser o
+         número de aluno. Sem `email` no conteúdo, deriva-se do utilizador. */
+      var email = m.email || m.user + '@isep.ipp.pt';
+
       return Object.assign({}, m, {
         photo: memberPhoto(m, i),
-        photoAlt: 'Foto de ' + m.name.split(' ')[0],
-        email: m.user + '@isep.ipp.pt',
-        mailto: 'mailto:' + m.user + '@isep.ipp.pt',
+        photoAlt: 'Photo of ' + m.name.split(' ')[0],
+        email: email,
+        mailto: 'mailto:' + email,
         gh: 'https://github.com/' + m.user,
         ghLabel: 'github.com/' + m.user
       });
@@ -127,7 +125,7 @@
       currentProject: current,
       projectCount: projects.length,
       entryCount: projects.reduce(function (n, p) { return n + p.weeks.length; }, 0),
-      edition: 'Atualizado a ' + (current.weeks.length
+      edition: 'Updated ' + (current.weeks.length
         ? current.weeks[current.weeks.length - 1].date
         : current.period)
     };
@@ -140,17 +138,17 @@
   function parseRoute(hash) {
     var path = String(hash || '').replace(/^#/, '').replace(/^\/*/, '').replace(/\/+$/, '');
     if (path === '') return { view: 'home' };
-    if (path === 'contactos') return { view: 'contact' };
+    if (path === 'contacts') return { view: 'contact' };
 
     var parts = path.split('/');
-    if (parts[0] !== 'projetos') return { view: 'notFound' };
+    if (parts[0] !== 'projects') return { view: 'notFound' };
     if (parts.length === 1) return { view: 'projects' };
 
     var project = MODEL.projects.filter(function (p) { return p.id === parts[1]; })[0];
     if (!project) return { view: 'notFound' };
     if (parts.length === 2) return { view: 'project', project: project };
 
-    var m = /^semana-(\d+)$/.exec(parts[2]);
+    var m = /^week-(\d+)$/.exec(parts[2]);
     if (!m || parts.length > 3) return { view: 'notFound' };
     var entry = project.weeks[Number(m[1]) - 1];
     /* Ao contrário do protótipo, uma semana inexistente não cai em silêncio para
@@ -171,47 +169,42 @@
         '</div>';
     };
 
-    return '<div class="cifra-view">' +
+    return '<div class="cairn-view">' +
       '<section style="display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,64px);align-items:flex-end">' +
         '<div style="flex:1 1 420px;min-width:0">' +
-          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-3)">Cinco alunos · um ano · vários projetos</p>' +
-          '<h1 class="cmyk-head" style="font-size:clamp(46px,7vw,86px);line-height:0.98;letter-spacing:-0.03em;margin:0 0 var(--space-4);max-width:11ch">' +
-            '<span class="paper">Diário de bordo</span>' +
-            '<span class="plate plate-c" aria-hidden="true">Diário de bordo</span>' +
-            '<span class="plate plate-m" aria-hidden="true">Diário de bordo</span>' +
-            '<span class="plate plate-y" aria-hidden="true">Diário de bordo</span>' +
-          '</h1>' +
+          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-3)">Five students · one year · several projects</p>' +
+          '<h1 style="font-size:clamp(46px,7vw,86px);line-height:0.98;letter-spacing:-0.03em;margin:0 0 var(--space-4);max-width:11ch">Project diary</h1>' +
           '<p style="font-size:19px;line-height:1.5;max-width:56ch;margin:0 0 var(--space-4);text-wrap:pretty">' +
-            'Somos cinco alunos do Mestrado em Engenharia de Inteligência Artificial do ISEP. Cada projeto que fazemos tem aqui o seu próprio diário — uma entrada por semana — e o seu próprio repositório no GitHub.' +
+            'We are five students on the MSc in Artificial Intelligence Engineering at ISEP. Every project we take on has its own diary here — one entry per week — and its own repository on GitHub.' +
           '</p>' +
           '<div style="display:flex;gap:var(--space-2);flex-wrap:wrap">' +
-            '<a class="btn btn-primary" href="#/projetos">Ver os projetos</a>' +
-            '<a class="btn btn-secondary" href="' + esc(MODEL.currentProject.repoUrl) + '" target="_blank" rel="noreferrer">Projeto atual no GitHub ↗</a>' +
+            '<a class="btn btn-primary" href="#/projects">See the projects</a>' +
+            '<a class="btn btn-secondary" href="' + esc(MODEL.currentProject.repoUrl) + '" target="_blank" rel="noreferrer">Current project on GitHub ↗</a>' +
           '</div>' +
         '</div>' +
         '<dl style="margin:0;flex:1 1 260px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--space-4) var(--space-3);align-self:flex-end;padding-bottom:6px">' +
-          stat('Projetos', MODEL.projectCount) +
-          stat('Entradas escritas', MODEL.entryCount) +
-          stat('A decorrer', esc(MODEL.currentProject.name), true) +
-          stat('Ano letivo', '2025/26<br>DEI — ISEP', true) +
+          stat('Projects', MODEL.projectCount) +
+          stat('Entries written', MODEL.entryCount) +
+          stat('In progress', esc(MODEL.currentProject.name), true) +
+          stat('Academic year', '2026/27<br>DEI — ISEP', true) +
         '</dl>' +
       '</section>' +
 
       '<section style="margin-top:clamp(56px,8vw,104px)">' +
         '<div style="display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-6)">' +
-          '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">A equipa</h2>' +
-          '<span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">cinco pessoas, cinco frentes</span>' +
+          '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">The team</h2>' +
+          '<span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">five people, five fronts</span>' +
         '</div>' +
         '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:clamp(20px,3vw,38px)">' +
           MODEL.members.map(function (m) {
             return '<li>' +
-              '<figure class="' + (m.photoClean ? 'cifra-member-photo cifra-member-photo-clean' : 'halftone') + '" style="margin:0 0 var(--space-3);aspect-ratio:4/5;background:var(--color-surface)">' +
+              '<figure class="cairn-frame' + (m.photoClean ? ' cairn-frame-zoom' : '') + '" style="margin:0 0 var(--space-3);aspect-ratio:4/5;background:var(--color-surface)">' +
                 image(m.photo, m.photoAlt) +
               '</figure>' +
               '<div style="display:flex;align-items:center;gap:var(--space-1);margin:0 0 2px">' +
                 '<h3 style="font-size:19px;margin:0;letter-spacing:-0.01em">' + esc(m.name) + '</h3>' +
                 (m.linkedin
-                  ? '<a class="cifra-linkedin" href="' + esc(m.linkedin) + '" target="_blank" rel="noreferrer" aria-label="LinkedIn de ' + esc(m.name) + '" title="LinkedIn de ' + esc(m.name) + '"><span aria-hidden="true">in</span></a>'
+                  ? '<a class="cairn-linkedin" href="' + esc(m.linkedin) + '" target="_blank" rel="noreferrer" aria-label="LinkedIn of ' + esc(m.name) + '" title="LinkedIn of ' + esc(m.name) + '"><span aria-hidden="true">in</span></a>'
                   : '') +
               '</div>' +
               '<p style="margin:0 0 6px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700)">' + esc(m.role) + '</p>' +
@@ -223,18 +216,18 @@
 
       '<section style="margin-top:clamp(56px,8vw,104px)">' +
         '<div style="display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap">' +
-          '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">Projetos</h2>' +
-          '<a href="#/projetos" style="font-size:14px;margin-left:auto">Ver todos →</a>' +
+          '<h2 style="font-size:clamp(28px,3.4vw,40px);margin:0;letter-spacing:-0.02em">Projects</h2>' +
+          '<a href="#/projects" style="font-size:14px;margin-left:auto">See all →</a>' +
         '</div>' +
-        '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,2.4vw,28px)">' +
+        '<ul class="cairn-cards">' +
           MODEL.projects.map(function (p) {
             return '<li>' +
-              '<a class="card elev-sm cifra-card" href="' + p.href + '" style="text-decoration:none;color:inherit;height:100%;padding:var(--space-4);gap:var(--space-3)">' +
+              '<a class="card elev-sm cairn-card" href="' + p.href + '" style="text-decoration:none;color:inherit;height:100%;padding:var(--space-4);gap:var(--space-3)">' +
                 '<span style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)">' +
                   '<span class="' + p.tagClass + '">' + esc(p.status) + '</span>' +
                   '<span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">' + esc(p.period) + '</span>' +
                 '</span>' +
-                '<span class="card-title cifra-card-title" style="font-size:23px;line-height:1.15;letter-spacing:-0.015em">' + esc(p.name) + '</span>' +
+                '<span class="card-title cairn-card-title" style="font-size:23px;line-height:1.15;letter-spacing:-0.015em">' + esc(p.name) + '</span>' +
                 '<p class="card-body" style="font-size:14px;line-height:1.55">' + esc(p.short) + '</p>' +
                 '<span style="font-size:13px;color:var(--color-accent-700);font-family:var(--font-heading)">' + esc(p.entriesLabel) + ' →</span>' +
               '</a>' +
@@ -246,18 +239,18 @@
   }
 
   function viewProjects() {
-    return '<div class="cifra-view">' +
+    return '<div class="cairn-view">' +
       '<section style="display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end;margin-bottom:clamp(36px,5vw,64px)">' +
-        '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0;flex:1 1 300px;min-width:0">Projetos</h1>' +
+        '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0;flex:1 1 300px;min-width:0">Projects</h1>' +
         '<p style="margin:0;flex:1 1 280px;min-width:0;font-size:16px;line-height:1.55;max-width:46ch;color:color-mix(in srgb, var(--color-text) 80%, transparent)">' +
-          'Cada projeto tem o seu repositório e o seu diário semanal, independentes um do outro. Escolhe um para entrar no diário.' +
+          'Each project has its own repository and its own weekly diary, independent of one another. Pick one to open the diary.' +
         '</p>' +
       '</section>' +
       '<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">' +
         MODEL.projects.map(function (p) {
           return '<li style="border-top:1px solid var(--color-divider)">' +
-            '<a class="cifra-proj" href="' + p.href + '" style="display:flex;flex-wrap:wrap;gap:var(--space-3) clamp(16px,3vw,40px);align-items:baseline;padding:var(--space-4) var(--space-2);text-decoration:none;color:inherit">' +
-              plates('cmyk-num', p.num, 'font-family:var(--font-heading);font-size:44px;flex:0 0 auto') +
+            '<a class="cairn-proj" href="' + p.href + '" style="display:flex;flex-wrap:wrap;gap:var(--space-3) clamp(16px,3vw,40px);align-items:baseline;padding:var(--space-4) var(--space-2);text-decoration:none;color:inherit">' +
+              numeral(p.num, p.isCurrent, 'font-size:44px;flex:0 0 auto') +
               '<span style="flex:3 1 240px;min-width:0">' +
                 '<span style="display:block;font-family:var(--font-heading);font-size:clamp(22px,2.6vw,30px);line-height:1.15;letter-spacing:-0.02em">' + esc(p.name) + '</span>' +
                 '<span style="display:block;margin-top:6px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700)">' + esc(p.course) + '</span>' +
@@ -277,20 +270,20 @@
   function viewProject(p) {
     var empty = !p.isEmpty ? '' :
       '<div style="padding:clamp(32px,6vw,72px) 0;max-width:46ch">' +
-        '<h2 style="font-size:26px;margin:0 0 var(--space-2);letter-spacing:-0.02em">Ainda sem entradas</h2>' +
+        '<h2 style="font-size:26px;margin:0 0 var(--space-2);letter-spacing:-0.02em">No entries yet</h2>' +
         '<p style="margin:0 0 var(--space-4);font-size:16px;line-height:1.6;color:color-mix(in srgb, var(--color-text) 75%, transparent)">' +
-          'O projeto arranca em ' + esc(p.period) + '. A primeira entrada aparece aqui no fim da primeira semana de trabalho.' +
+          'The project starts in ' + esc(p.period) + '. The first entry appears here at the end of the first week of work.' +
         '</p>' +
-        '<a class="btn btn-ghost" href="#/projetos">Ver os outros projetos</a>' +
+        '<a class="btn btn-ghost" href="#/projects">See the other projects</a>' +
       '</div>';
 
-    return '<div class="cifra-view">' +
-      '<a href="#/projetos" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Projetos</a>' +
+    return '<div class="cairn-view">' +
+      '<a href="#/projects" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Projects</a>' +
       '<section style="display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end;margin:var(--space-4) 0 clamp(32px,5vw,56px)">' +
         '<div style="flex:2 1 420px;min-width:0">' +
-          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">Diário · ' + esc(p.course) + '</p>' +
+          '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">Diary · ' + esc(p.course) + '</p>' +
           '<h1 style="font-size:clamp(38px,5.6vw,70px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-3);max-width:16ch;text-wrap:balance">' + esc(p.name) + '</h1>' +
-          '<p style="margin:0;font-size:18px;line-height:1.55;max-width:56ch;text-wrap:pretty">' + esc(p.long) + '</p>' +
+          '<p class="cairn-prose" style="margin:0;font-size:18px;line-height:1.55;max-width:56ch">' + esc(p.long) + '</p>' +
         '</div>' +
         '<div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:var(--space-3);align-items:flex-start">' +
           '<span class="' + p.tagClass + '">' + esc(p.status) + '</span>' +
@@ -305,22 +298,20 @@
 
       empty +
 
-      '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,2.4vw,28px)">' +
+      '<ul class="cairn-cards">' +
         p.weeks.map(function (w) {
           return '<li>' +
-            '<a class="card elev-sm cifra-card" href="' + w.href + '" style="text-decoration:none;color:inherit;height:100%;padding:var(--space-4);gap:var(--space-3)">' +
+            '<a class="card elev-sm cairn-card" href="' + w.href + '" style="text-decoration:none;color:inherit;height:100%;padding:var(--space-4);gap:var(--space-3)">' +
               '<span style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-2)">' +
-                /* A chapa numérica assenta sobre o cartão, não sobre o papel da
-                   página: sem este fundo próprio ficaria com um halo branco. */
-                plates('cmyk-num', w.num, 'font-family:var(--font-heading);font-size:40px;--cmyk-num-ground:var(--color-surface)') +
+                numeral(w.num, w.isLatest, 'font-size:40px') +
                 '<span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">' + esc(w.date) + '</span>' +
               '</span>' +
-              '<span class="card-title cifra-card-title" style="font-size:23px;line-height:1.15;letter-spacing:-0.015em">' + esc(w.title) + '</span>' +
+              '<span class="card-title cairn-card-title" style="font-size:23px;line-height:1.15;letter-spacing:-0.015em">' + esc(w.title) + '</span>' +
               '<p class="card-body" style="font-size:14px;line-height:1.55">' + esc(w.excerpt) + '</p>' +
               '<span style="display:flex;gap:6px;flex-wrap:wrap">' +
                 w.tags.map(function (t) { return '<span class="tag tag-accent">' + esc(t) + '</span>'; }).join('') +
               '</span>' +
-              '<span style="font-size:13px;color:var(--color-accent-700);font-family:var(--font-heading)">Ler a semana →</span>' +
+              '<span style="font-size:13px;color:var(--color-accent-700);font-family:var(--font-heading)">Read the week →</span>' +
             '</a>' +
           '</li>';
         }).join('') +
@@ -334,62 +325,62 @@
       body = '<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)">' +
         b.items.map(function (it) {
           return '<li style="display:grid;grid-template-columns:18px minmax(0,1fr);gap:var(--space-2);font-size:17px;line-height:1.55">' +
-            '<span style="color:var(--color-accent-2);font-size:14px;padding-top:3px">▪</span>' +
+            '<span style="color:var(--color-accent);font-size:14px;padding-top:3px">▪</span>' +
             '<span>' + esc(it) + '</span>' +
           '</li>';
         }).join('') +
       '</ul>';
     } else if (b.kind === 'figure') {
       body = '<figure>' +
-        '<div class="halftone" style="aspect-ratio:16/9;background:var(--color-surface)">' +
+        '<div class="cairn-frame" style="aspect-ratio:16/9;background:var(--color-surface)">' +
           image(figureImage(b), b.alt) +
         '</div>' +
         '<figcaption>' + esc(b.caption) + '</figcaption>' +
       '</figure>';
     } else {
-      body = '<p style="margin:0;font-size:17px;line-height:1.62;text-wrap:pretty">' + esc(b.text) + '</p>';
+      body = '<p class="cairn-prose" style="margin:0;font-size:17px;line-height:1.62">' + esc(b.text) + '</p>';
     }
 
     return '<section style="display:flex;flex-wrap:wrap;gap:var(--space-2) clamp(16px,3vw,44px);align-items:flex-start">' +
-      '<h2 style="flex:0 1 200px;font-size:16px;letter-spacing:0.1em;text-transform:uppercase;margin:0;color:color-mix(in srgb, var(--color-text) 62%, transparent);padding-top:5px">' + esc(b.title) + '</h2>' +
+      '<h2 style="flex:0 1 200px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;margin:0;color:var(--color-accent-2);padding-top:5px">' + esc(b.title) + '</h2>' +
       '<div style="flex:1 1 320px;min-width:0;max-width:66ch">' + body + '</div>' +
     '</section>';
   }
 
   function viewEntry(p, entry) {
-    return '<article class="cifra-view">' +
-      '<a href="' + p.href + '" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Diário · ' + esc(p.name) + '</a>' +
+    return '<article class="cairn-view">' +
+      '<a href="' + p.href + '" style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Diary · ' + esc(p.name) + '</a>' +
       '<header style="margin:var(--space-4) 0 clamp(32px,5vw,56px);display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,64px);align-items:flex-end">' +
         '<div style="flex:2 1 420px;min-width:0">' +
           '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">' + esc(entry.kicker) + ' · ' + esc(entry.date) + '</p>' +
           '<h1 style="font-size:clamp(36px,5.4vw,66px);line-height:1.02;letter-spacing:-0.03em;margin:0;max-width:18ch;text-wrap:balance">' + esc(entry.title) + '</h1>' +
         '</div>' +
         '<div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:var(--space-2);align-items:flex-start">' +
-          '<p style="margin:0;font-size:13px;color:color-mix(in srgb, var(--color-text) 60%, transparent)">Escrito por ' + esc(entry.author) + '</p>' +
+          '<p style="margin:0;font-size:13px;color:color-mix(in srgb, var(--color-text) 60%, transparent)">Written by ' + esc(entry.author) + '</p>' +
           '<span style="display:flex;gap:6px;flex-wrap:wrap">' +
             entry.tags.map(function (t) { return '<span class="tag tag-outline">' + esc(t) + '</span>'; }).join('') +
           '</span>' +
         '</div>' +
       '</header>' +
 
-      '<p style="font-size:clamp(19px,2.1vw,25px);line-height:1.5;max-width:34ch;font-style:italic;margin:0 0 clamp(32px,4vw,52px);color:var(--color-neutral-900)">' + esc(entry.lead) + '</p>' +
+      '<p style="font-size:clamp(19px,2.1vw,25px);line-height:1.45;max-width:38ch;margin:0 0 clamp(32px,4vw,52px);padding-left:var(--space-4);border-left:2px solid var(--color-accent);color:var(--color-neutral-900)">' + esc(entry.lead) + '</p>' +
 
       '<div style="display:flex;flex-direction:column;gap:clamp(30px,4vw,48px)">' +
         entry.blocks.map(entryBlock).join('') +
       '</div>' +
 
       '<footer style="margin-top:clamp(48px,7vw,88px);padding-top:var(--space-4);border-top:1px solid var(--color-text);display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center">' +
-        '<a class="btn btn-secondary" href="' + esc(entry.commits) + '" target="_blank" rel="noreferrer">Commits desta semana ↗</a>' +
-        '<a class="btn btn-ghost" href="' + p.href + '">Voltar ao diário</a>' +
+        '<a class="btn btn-secondary" href="' + esc(entry.commits) + '" target="_blank" rel="noreferrer">Commits from this week ↗</a>' +
+        '<a class="btn btn-ghost" href="' + p.href + '">Back to the diary</a>' +
       '</footer>' +
     '</article>';
   }
 
   function viewContact() {
-    return '<div class="cifra-view">' +
-      '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-4)">Contactos</h1>' +
+    return '<div class="cairn-view">' +
+      '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-4)">Contacts</h1>' +
       '<p style="font-size:18px;line-height:1.55;max-width:50ch;margin:0 0 clamp(36px,5vw,64px);color:color-mix(in srgb, var(--color-text) 80%, transparent)">' +
-        'Dúvidas, ideias, datasets para partilhar ou vontade de nos dizer que a nossa arquitetura está errada — escreve para qualquer um de nós.' +
+        'Questions, ideas, datasets to share, or the urge to tell us our architecture is wrong — write to any of us.' +
       '</p>' +
       '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-6) clamp(24px,4vw,56px)">' +
         MODEL.members.map(function (m) {
@@ -404,7 +395,7 @@
         }).join('') +
       '</ul>' +
       '<div style="margin-top:clamp(48px,7vw,88px);padding-top:var(--space-4);border-top:1px solid var(--color-text)">' +
-        '<h2 style="font-size:24px;margin:0 0 var(--space-3);letter-spacing:-0.02em">Repositórios</h2>' +
+        '<h2 style="font-size:24px;margin:0 0 var(--space-3);letter-spacing:-0.02em">Repositories</h2>' +
         '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-3) clamp(24px,4vw,56px);font-size:15px;line-height:1.6">' +
           MODEL.projects.map(function (p) {
             return '<li>' +
@@ -421,15 +412,15 @@
   /* O protótipo não tinha esta vista: com URL próprio por entrada passa a ser
      possível chegar a um endereço que já não existe. */
   function viewNotFound() {
-    return '<div class="cifra-view" style="padding:clamp(32px,6vw,72px) 0;max-width:46ch">' +
-      '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-3)">Página não encontrada</p>' +
-      '<h1 style="font-size:clamp(36px,5vw,60px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-3)">Esta entrada não existe</h1>' +
+    return '<div class="cairn-view" style="padding:clamp(32px,6vw,72px) 0;max-width:46ch">' +
+      '<p style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-3)">Page not found</p>' +
+      '<h1 style="font-size:clamp(36px,5vw,60px);line-height:1;letter-spacing:-0.03em;margin:0 0 var(--space-3)">This entry does not exist</h1>' +
       '<p style="margin:0 0 var(--space-4);font-size:17px;line-height:1.6;color:color-mix(in srgb, var(--color-text) 75%, transparent)">' +
-        'A ligação pode estar errada ou a entrada ainda não foi escrita. O diário de cada projeto tem a lista completa.' +
+        'The link may be wrong, or the entry has not been written yet. Each project diary has the full list.' +
       '</p>' +
       '<div style="display:flex;gap:var(--space-2);flex-wrap:wrap">' +
-        '<a class="btn btn-primary" href="#/projetos">Ver os projetos</a>' +
-        '<a class="btn btn-ghost" href="#/">Voltar ao início</a>' +
+        '<a class="btn btn-primary" href="#/projects">See the projects</a>' +
+        '<a class="btn btn-ghost" href="#/">Back to the start</a>' +
       '</div>' +
     '</div>';
   }
@@ -437,22 +428,22 @@
   /* ------------------------------------------------------------ renderização */
 
   var TITLES = {
-    home: 'Cifra — Diário de projetos · MEIA ISEP',
-    projects: 'Projetos — Cifra',
-    contact: 'Contactos — Cifra',
-    notFound: 'Página não encontrada — Cifra'
+    home: 'Cairn — Project diary · MEIA ISEP',
+    projects: 'Projects — Cairn',
+    contact: 'Contacts — Cairn',
+    notFound: 'Page not found — Cairn'
   };
 
   function navMarkup(view) {
-    /* "Projetos" fica marcado em toda a secção do diário, como no design. */
+    /* "Projects" fica marcado em toda a secção do diário, como no design. */
     var onProjects = (view === 'projects' || view === 'project' || view === 'entry');
     var link = function (href, label, active) {
       return '<a href="' + href + '"' + (active ? ' aria-current="page"' : '') +
         ' style="font-size:14px;text-decoration:none;color:inherit">' + label + '</a>';
     };
-    return link('#/', 'Início', view === 'home') +
-      link('#/projetos', 'Projetos', onProjects) +
-      link('#/contactos', 'Contactos', view === 'contact');
+    return link('#/', 'Home', view === 'home') +
+      link('#/projects', 'Projects', onProjects) +
+      link('#/contacts', 'Contacts', view === 'contact');
   }
 
   function render(firstPaint) {
@@ -468,23 +459,34 @@
       default: body = viewHome();
     }
 
-    document.getElementById('cifra-nav').innerHTML = navMarkup(route.view);
-    document.getElementById('cifra-edition').textContent = MODEL.edition;
+    document.getElementById('cairn-nav').innerHTML = navMarkup(route.view);
+    document.getElementById('cairn-edition').textContent = MODEL.edition;
 
-    var main = document.getElementById('cifra-main');
+    var main = document.getElementById('cairn-main');
     main.innerHTML = body;
 
     document.title = route.view === 'entry'
-      ? route.entry.title + ' — ' + route.project.name + ' · Cifra'
+      ? route.entry.title + ' — ' + route.project.name + ' · Cairn'
       : route.view === 'project'
-        ? route.project.name + ' — Cifra'
+        ? route.project.name + ' — Cairn'
         : TITLES[route.view];
 
     Array.prototype.forEach.call(main.querySelectorAll('img[data-optional]'), function (img) {
       img.addEventListener('error', function () { img.style.display = 'none'; });
     });
 
-    if (!firstPaint) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (firstPaint) return;
+
+    /* A vista trocou sem que a página recarregasse: sem mover o foco, quem usa
+       leitor de ecrã continua no elemento anterior e não é avisado de nada. */
+    var heading = main.querySelector('h1');
+    if (heading) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+    }
+
+    var reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduzido ? 'auto' : 'smooth' });
   }
 
   window.addEventListener('hashchange', function () { render(false); });
