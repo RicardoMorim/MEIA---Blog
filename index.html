@@ -1,42 +1,65 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cifra — Diário de projetos · MEIA ISEP</title>
-<meta name="description" content="Diário de projetos de cinco alunos do Mestrado em Engenharia de Inteligência Artificial do ISEP. Uma entrada por semana, um repositório por projeto.">
+<meta name="color-scheme" content="light dark">
+<title>Cairn — Project diary · MEIA ISEP</title>
+<meta name="description" content="Project diary of five students on the MSc in Artificial Intelligence Engineering at ISEP. One entry per week, one repository per project.">
 
-<!-- O sistema de design Broadsheet, tal como veio do Claude Design. O bundle traz
-     os filtros de separação e o driver da prensa, que publica --press-nx/--press-ny
-     para as chapas do título e dos numerais. Nada aqui é editado à mão. -->
-<link rel="stylesheet" href="_ds/broadsheet-527eef35-994c-456d-b71f-54ce089487b8/styles.css">
-<script src="_ds/broadsheet-527eef35-994c-456d-b71f-54ce089487b8/_ds_bundle.js"></script>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://meia-blog.vercel.app/">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Cairn">
+<meta property="og:title" content="Cairn — Project diary · MEIA ISEP">
+<meta property="og:description" content="One entry per week, one repository per project. Five students on the MSc in Artificial Intelligence Engineering at ISEP.">
+<meta property="og:image" content="https://meia-blog.vercel.app/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
-<link rel="stylesheet" href="assets/css/cifra.css">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/cairn.css">
 </head>
 <body>
 
-<div style="min-height:100vh;display:flex;flex-direction:column;font-family:var(--font-body)">
+<div style="min-height:100vh;display:flex;flex-direction:column">
 
-  <header style="display:flex;align-items:baseline;gap:var(--space-4);flex-wrap:wrap;padding:var(--space-4) clamp(20px,5vw,64px) var(--space-2);max-width:1240px;width:100%;margin:0 auto">
-    <a href="#/" style="font-family:var(--font-heading);font-weight:600;font-size:21px;letter-spacing:-0.02em;text-decoration:none;color:var(--color-text)">Cifra<span style="color:var(--color-accent-2)">.</span></a>
-    <nav id="cifra-nav" style="display:flex;gap:var(--space-4);margin-left:auto;align-items:baseline"></nav>
+  <header style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;padding:var(--space-4) clamp(20px,5vw,64px) var(--space-3);max-width:1240px;width:100%;margin:0 auto">
+    <a href="#/" aria-label="Cairn — home" style="display:flex;align-items:center;gap:var(--space-3);text-decoration:none;color:var(--color-text)">
+      <svg width="26" height="26" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-linejoin="round">
+          <path stroke-width="11.70" transform="translate(100 100) scale(0.94) translate(-100 -100)" d="M100 34C110 34 116 44 124 62L158 132C166 149 157 164 140 164L60 164C43 164 34 149 42 132L76 62C84 44 90 34 100 34Z"/>
+          <path stroke-width="19.64" transform="translate(100 100) scale(0.56) translate(-100 -100)" d="M100 34C110 34 116 44 124 62L158 132C166 149 157 164 140 164L60 164C43 164 34 149 42 132L76 62C84 44 90 34 100 34Z"/>
+        </g>
+        <path class="cairn-mark-peak" transform="translate(100 100) scale(0.22) translate(-100 -100)" d="M100 34C110 34 116 44 124 62L158 132C166 149 157 164 140 164L60 164C43 164 34 149 42 132L76 62C84 44 90 34 100 34Z"/>
+      </svg>
+      <span style="font-family:var(--font-heading);font-weight:600;font-size:18px;letter-spacing:0.2em">CAIRN</span>
+    </a>
+    <nav id="cairn-nav" style="display:flex;gap:var(--space-4);margin-left:auto;align-items:baseline"></nav>
   </header>
 
-  <!-- A mobília de primeira página: o par de filetes grosso-fino em volta da
-       linha de data, a uma tinta cheia. -->
-  <div style="height:3px;background:var(--color-text);max-width:1240px;width:100%;margin:0 auto"></div>
-  <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:6px clamp(20px,5vw,64px);max-width:1240px;width:100%;margin:0 auto;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);border-bottom:1px solid var(--color-text)">
-    <span>ISEP — Mestrado em Engenharia de Inteligência Artificial</span>
-    <span>Diário de projetos</span>
-    <span id="cifra-edition"></span>
+  <div style="height:1px;background:var(--color-text);max-width:1240px;width:100%;margin:0 auto"></div>
+  <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:7px clamp(20px,5vw,64px);max-width:1240px;width:100%;margin:0 auto;font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-2);border-bottom:1px solid var(--color-divider)">
+    <span>ISEP — MSc in Artificial Intelligence Engineering</span>
+    <span>Project diary</span>
+    <span id="cairn-edition"></span>
   </div>
 
-  <main id="cifra-main" style="flex:1;max-width:1240px;width:100%;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(20px,5vw,64px) 80px"></main>
+  <main id="cairn-main" style="flex:1;max-width:1240px;width:100%;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(20px,5vw,64px) 80px">
+    <noscript>
+      <p style="font-size:17px;line-height:1.6;max-width:56ch">
+        This diary is assembled in the browser. Enable JavaScript to read it, or
+        go straight to each project's repository on GitHub.
+      </p>
+    </noscript>
+  </main>
 
-  <footer style="border-top:1px solid var(--color-text);max-width:1240px;width:100%;margin:0 auto;padding:var(--space-3) clamp(20px,5vw,64px) var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">
-    <span>Cifra — diário de projetos</span>
-    <span style="margin-left:auto">MEIA · ISEP · 2025/26</span>
+  <footer style="border-top:1px solid var(--color-text);max-width:1240px;width:100%;margin:0 auto;padding:var(--space-3) clamp(20px,5vw,64px) var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap;font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-2)">
+    <span>Cairn — project diary</span>
+    <span style="margin-left:auto">MEIA · ISEP · 2026/27</span>
   </footer>
 </div>
 
