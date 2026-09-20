@@ -76,6 +76,9 @@ a:hover { color: var(--color-accent); }
   outline-offset: 3px;
 }
 
+h1[tabindex="-1"]:focus,
+h1[tabindex="-1"]:focus-visible { outline: none; }
+
 .btn {
   display: inline-flex;
   align-items: center;
