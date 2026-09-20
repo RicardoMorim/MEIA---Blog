@@ -36,9 +36,12 @@
       },
       {
         name: 'João Almeida',
-        role: 'Features & Engineering',
-        bio: 'Lives inside the raw data. Turns whatever the machine spits out into features a model can actually learn from.',
-        user: 'joaoalmeida'
+        role: 'Software Engineer',
+        bio: 'I completed my Bachelor\'s degree in Informatics Engineering in 2019 and currently work as a Software Engineer, with experience in developing scalable solutions, managing projects, and leading teams. I also have experience in Business Intelligence and data analysis. I joined MEIA to deepen my knowledge of Artificial Intelligence and explore new ways of applying AI to solve real-world problems.',
+        user: 'JoaoAlmeida147',
+        photo: 'assets/img/joao-almeida.jpg',
+        email: '1260435@isep.ipp.pt',
+        linkedin: 'https://www.linkedin.com/in/joaopgalmeida-dev/'
       },
       {
         name: 'Dinis Laranjeira',
