@@ -45,9 +45,11 @@
       },
       {
         name: 'Dinis Laranjeira',
-        role: 'Evaluation & Visualization',
-        bio: 'Builds the dashboards and the metrics — and is the one who asks whether the pretty number means anything.',
-        user: 'dinislaranjeira'
+        role: 'Software Engineer - Fullstack Developer',
+        bio: 'I completed my Bachelor\'s degree in Informatics and Computer Engineering in 2023. I currently work as a fullstack developer, building applications mostly for government institutions. I joined MEIA to strengthen my foundations in artificial intelligence.',
+        user: 'Dinis-Laranjeira',
+        email: '1260428@isep.ipp.pt',
+        linkedin: 'https://www.linkedin.com/in/dinis-laranjeira-140678251/'
       }
     ],
 
