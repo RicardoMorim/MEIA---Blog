@@ -75,7 +75,7 @@
           num: n,
           isLatest: i === p.weeks.length - 1,
           kicker: 'Week ' + n,
-          href: '#/challenges/' + p.id + '/week-' + n
+          href: w.href || '#/challenges/' + p.id + '/week-' + n
         });
       });
 
