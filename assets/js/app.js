@@ -9,6 +9,7 @@
  *   #/challenges/:challenge            detalhe de um challenge
  *   #/challenges/:challenge/week-01    uma entrada
  *   #/reports                          relatórios semanais
+ *   #/reports/:relatorio               detalhe de um relatório
  *   #/contacts                         contactos
  *
  * O encaminhamento é por fragmento (e não por caminho) para que o site funcione
@@ -114,9 +115,16 @@
       });
     });
 
+    var reports = (DATA.reports || []).map(function (report, i) {
+      return Object.assign({}, report, {
+        num: pad2(i + 1),
+        href: '#/reports/' + report.id
+      });
+    });
+
     return {
       projects: projects,
-      reports: DATA.reports || [],
+      reports: reports,
       members: members,
       currentProject: current,
       projectCount: projects.length,
@@ -135,6 +143,12 @@
     if (path === 'contacts') return { view: 'contact' };
 
     var parts = path.split('/');
+    if (parts[0] === 'reports') {
+      if (parts.length !== 2) return { view: 'notFound' };
+      var report = MODEL.reports.filter(function (r) { return r.id === parts[1]; })[0];
+      return report ? { view: 'report', report: report } : { view: 'notFound' };
+    }
+
     if (parts[0] !== 'challenges' && parts[0] !== 'projects') return { view: 'notFound' };
     if (parts.length === 1) return { view: 'projects' };
 
@@ -348,21 +362,48 @@
         '<h1 style="font-size:clamp(40px,6vw,72px);line-height:1;letter-spacing:-0.03em;margin:0;flex:1 1 300px;min-width:0">Reports</h1>' +
       '</section>' +
       '<ul class="cairn-cards">' +
-        MODEL.reports.map(function (report, i) {
+        MODEL.reports.map(function (report) {
           return '<li>' +
-            '<article class="card elev-sm" style="height:100%;padding:var(--space-4);gap:var(--space-3)">' +
+            '<a class="card elev-sm cairn-card" href="' + esc(report.href) + '" style="height:100%;padding:var(--space-4);gap:var(--space-3);text-decoration:none;color:inherit">' +
               '<span style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)">' +
-                numeral(pad2(i + 1), false, 'font-size:40px') +
-                '<span class="tag tag-outline">' + esc(report.status) + '</span>' +
+                numeral(report.num, false, 'font-size:40px') +
+                '<span class="tag tag-accent">' + esc(report.status) + '</span>' +
               '</span>' +
               '<h2 class="card-title" style="font-size:23px;line-height:1.15;letter-spacing:-0.015em;margin:0">' + esc(report.title) + '</h2>' +
-              '<p class="card-body" style="font-size:14px;line-height:1.55">' + esc(report.summary) + '</p>' +
-              '<span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-2)">' + esc(report.period) + ' · Coming soon</span>' +
-            '</article>' +
+              '<p class="card-body" style="font-size:14px;line-height:1.55">' + esc(report.excerpt) + '</p>' +
+              '<span style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);flex-wrap:wrap">' +
+                '<span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-2)">' + esc(report.period) + '</span>' +
+                '<span style="font-size:13px;color:var(--color-accent-700);font-weight:500">Read report →</span>' +
+              '</span>' +
+            '</a>' +
           '</li>';
         }).join('') +
       '</ul>' +
     '</div>';
+  }
+
+  function viewReport(report) {
+    return '<article class="cairn-view" style="--report-inset:clamp(12px,3vw,44px);max-width:1040px;margin:0 auto">' +
+      '<a href="#/reports" style="display:block;max-width:880px;margin:0 auto;padding-inline:var(--report-inset);font-size:13px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">← Reports</a>' +
+      '<header style="max-width:880px;margin:var(--space-4) auto clamp(32px,5vw,56px);padding-inline:var(--report-inset)">' +
+        '<p style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 var(--space-2)">' + esc(report.period) + '</p>' +
+        '<h1 style="font-size:clamp(36px,5.4vw,66px);line-height:1.02;letter-spacing:-0.03em;margin:0;max-width:19ch;text-wrap:balance">' + esc(report.title) + '</h1>' +
+      '</header>' +
+
+      '<section style="max-width:880px;margin:0 auto clamp(36px,5vw,64px);padding-inline:var(--report-inset)">' +
+        '<h2 style="font-size:clamp(26px,3vw,38px);line-height:1.1;margin:0 0 var(--space-4);padding-bottom:var(--space-3);border-bottom:2px solid var(--color-accent);color:var(--color-accent-700)">Summary</h2>' +
+        '<ul style="margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:var(--space-3);font-size:clamp(17px,2vw,21px);line-height:1.45">' +
+          report.summary.map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') +
+        '</ul>' +
+      '</section>' +
+
+      '<section style="max-width:880px;margin:0 auto;padding-inline:var(--report-inset)">' +
+        '<h2 style="font-size:26px;line-height:1.2;margin:0 0 var(--space-4)">Week in review</h2>' +
+        report.paragraphs.map(function (paragraph) {
+          return '<p class="cairn-prose" style="font-size:17px;line-height:1.7;margin:0 0 var(--space-4)">' + esc(paragraph) + '</p>';
+        }).join('') +
+      '</section>' +
+    '</article>';
   }
 
   function viewContact() {
@@ -411,6 +452,7 @@
     home: 'Cairn — Project blog · MEIA ISEP',
     projects: 'Challenges — Cairn',
     reports: 'Reports — Cairn',
+    report: 'Report — Cairn',
     contact: 'Contacts — Cairn',
     notFound: 'Page not found — Cairn'
   };
@@ -424,7 +466,7 @@
     };
     return link('#/', 'Home', view === 'home') +
       link('#/challenges', 'Challenges', onProjects) +
-      link('#/reports', 'Reports', view === 'reports') +
+      link('#/reports', 'Reports', view === 'reports' || view === 'report') +
       link('#/contacts', 'Contacts', view === 'contact');
   }
 
@@ -437,6 +479,7 @@
       case 'project': body = viewProject(route.project); break;
       case 'entry': body = viewEntry(route.project, route.entry); break;
       case 'reports': body = viewReports(); break;
+      case 'report': body = viewReport(route.report); break;
       case 'contact': body = viewContact(); break;
       case 'notFound': body = viewNotFound(); break;
       default: body = viewHome();
@@ -448,6 +491,8 @@
 
     document.title = route.view === 'entry'
       ? route.entry.title + ' — ' + route.project.name + ' · Cairn'
+      : route.view === 'report'
+        ? route.report.title + ' — Cairn'
       : route.view === 'project'
         ? route.project.name + ' — Cairn'
         : TITLES[route.view];

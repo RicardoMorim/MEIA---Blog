@@ -47,6 +47,7 @@ de reescrita. Cada entrada tem endereço próprio e pode ser partilhada:
 #/challenges/challenge-01        página de um challenge
 #/challenges/challenge-01/week-01 uma entrada
 #/reports                        relatórios semanais
+#/reports/week-01                um relatório semanal
 #/contacts                       contactos
 ```
 

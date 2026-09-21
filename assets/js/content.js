@@ -56,10 +56,22 @@
 
     reports: [
       {
-        title: 'Weekly Report 01',
+        id: 'week-01',
+        title: 'Week 1 - Hello World',
         period: 'Week 01',
-        status: 'Placeholder',
-        summary: 'The first weekly report will be published here once it has been completed and reviewed by the team.'
+        status: 'Published',
+        excerpt: 'The team got to know one another, explored AI security challenges and defined the initial direction of the project.',
+        summary: [
+          'Team introductions and background sharing',
+          'Brainstorming AI security and knowledge-based approaches',
+          'Defining the project direction and confirming the domain expert'
+        ],
+        paragraphs: [
+          'During the first week, we had the opportunity to meet as a team and get to know each other better. We discussed each member\'s professional background, areas of expertise and interests.',
+          'Cybersecurity was assigned to our team because of the background of several members. Within this area, we wanted to address a modern and relevant problem, so we focused our initial brainstorming on the security of AI systems, particularly LLM-based agents. We explored how a knowledge-based system could use expert knowledge to identify threats associated with an agent\'s data sources, tools, permissions and external capabilities.',
+          'Throughout the week, we refined the idea towards a knowledge-based system for AI threat modelling and compliance assessment. The proposed system will analyse a structured description of an AI system to identify potential security threats and recommend suitable controls and security tests. It may also identify compliance requirements that could be relevant to the system being assessed.',
+          'We also confirmed Diogo Gomes, Product Security Engineer at Blip, as the project\'s domain expert.'
+        ]
       }
     ],
 
