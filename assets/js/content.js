@@ -11,9 +11,10 @@
     members: [
       {
         name: 'Ricardo Morim',
-        role: 'Data & MLOps',
-        bio: 'Builds the ingestion pipeline and keeps the experiments reproducible — if it cannot be run again, it does not count.',
-        user: 'ricardomorim'
+        role: 'AI Security & AppSec',
+        bio: 'I completed my bachelor\u2019s degree in Informatics Engineering (LEI) at ISEP in 2026 and joined MEIA at ISEP right after. I have professional experience in Application Security and AI Security at Celfocus. In October I moved to Critical Manufacturing as an AI Software Engineer, where I will gain more experience in AI.',
+        user: 'ricardomorim',
+        photo: 'assets/img/Ricardo.jpeg'
       },
       {
         name: 'Pedro Campos',
