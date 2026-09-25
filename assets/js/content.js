@@ -73,6 +73,26 @@
           'Throughout the week, we refined the idea towards an expert system for AI threat modelling and compliance assessment. The proposed system will analyse a structured description of an AI system to identify potential security threats and recommend suitable controls and security tests. It may also identify compliance requirements that could be relevant to the system being assessed.',
           'We also confirmed Diogo Gomes, Product Security Engineer at Blip, as the project\'s domain expert.'
         ]
+      },
+      {
+        id: 'week-02',
+        title: 'Week 2 - Defining the Direction',
+        period: 'Week 02',
+        status: 'Published',
+        excerpt: 'The team defined the project\'s scope, explored core expert-system functionalities and met with the domain expert to prepare for knowledge acquisition.',
+        summary: [
+          'Formal definition and communication of the project topic',
+          'Brainstorming the core functionalities of the expert system',
+          'First meeting with the domain expert and planning for knowledge acquisition'
+        ],
+        paragraphs: [
+          'During the second week, we took an important step towards consolidating our project. After the initial brainstorming and exploration of different approaches, we formally defined and communicated the topic that will guide the development of our expert system.',
+          'Our project will focus on developing an expert system for assessing security risks in AI systems, particularly LLM-based agents. Based on information about an agent\'s architecture, capabilities, data access and existing security controls, the system will use expert knowledge, implemented through Prolog and Drools, to identify potential threats, detect risky data and access paths, recommend appropriate security controls and mitigations, and indicate potentially applicable EU AI Act compliance requirements. A key aspect of the system will be explainability: the system should not only provide conclusions, but also explain the reasoning behind them, including cases where the available information is incomplete or unknown.',
+          'With the project scope now established, we started brainstorming possible core functionalities among the team members. We discussed how the different components of the system could interact and what information would be required to support meaningful security assessments. This initial work helped us start translating the project concept into concrete capabilities and provided a clearer foundation for the next stages of development.',
+          'This week also marked our first meeting with Diogo Gomes, our domain expert. During the meeting, we presented the defined project topic and discussed some of our initial ideas for the system. Although the discussion was deliberately kept at a high level, it provided an important first opportunity to validate our direction and introduce the expert to the objectives and scope of the project.',
+          'Given the central role of the expert in the development of a knowledge-based expert system, we agreed that a deeper knowledge acquisition process will be necessary. The value of the system depends significantly on incorporating domain knowledge that goes beyond what can be derived from general or non-expert knowledge. For this reason, we scheduled a second meeting with Diogo for the following week, with the objective of exploring the domain in greater depth, understanding how security professionals approach the assessment of AI systems, and gathering the knowledge required to define the system\'s rules, reasoning processes and recommendations.',
+          'Overall, this week allowed us to move from an initial project idea towards a clearly defined problem and development direction. We now have a concrete scope, an identified technological approach and a domain expert who will play a key role in grounding the knowledge base of the system in real-world cybersecurity expertise.'
+        ]
       }
     ],
 
@@ -92,6 +112,13 @@
             excerpt: 'Team introductions, initial exploration of AI security and definition of the project direction.',
             tags: ['AI security', 'Project exploration'],
             href: '#/reports/week-01'
+          },
+          {
+            title: 'Week 2 - Defining the Direction',
+            date: 'Week 02',
+            excerpt: 'The team defined the project\'s scope, explored core expert-system functionalities and met with the domain expert to prepare for knowledge acquisition.',
+            tags: ['AI security', 'Expert system', 'Knowledge acquisition'],
+            href: '#/reports/week-02'
           }
         ]
       }
