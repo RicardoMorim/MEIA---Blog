@@ -93,6 +93,24 @@
           'Given the central role of the expert in the development of a knowledge-based expert system, we agreed that a deeper knowledge acquisition process will be necessary. The value of the system depends significantly on incorporating domain knowledge that goes beyond what can be derived from general or non-expert knowledge. For this reason, we scheduled a second meeting with Diogo for the following week, with the objective of exploring the domain in greater depth, understanding how security professionals approach the assessment of AI systems, and gathering the knowledge required to define the system\'s rules, reasoning processes and recommendations.',
           'Overall, this week allowed us to move from an initial project idea towards a clearly defined problem and development direction. We now have a concrete scope, an identified technological approach and a domain expert who will play a key role in grounding the knowledge base of the system in real-world cybersecurity expertise.'
         ]
+      },
+      {
+        id: 'week-03',
+        title: 'Week 3 - Building the Knowledge Base',
+        period: 'Week 03',
+        status: 'Published',
+        excerpt: 'The team divided the research work into themes, validated the rules gathered so far with the domain expert and started the preliminary knowledge acquisition report.',
+        summary: [
+          'Dividing the research work into three thematic areas',
+          'Meeting with the domain expert to validate the rules gathered so far',
+          'Starting the preliminary knowledge acquisition report'
+        ],
+        paragraphs: [
+          'During the third week, we focused on organising the research needed to build the system\'s knowledge base. To make this work more structured and efficient, we divided the research into three thematic areas and distributed them among the team members.',
+          'The first area focuses on gathering the information needed to characterise the profile of an AI agent, such as its architecture, capabilities, data access, tools and permissions. The second area focuses on researching threats and security controls specific to AI agents. The third area addresses risk assessment and compliance requirements, including the obligations that may apply to the system being assessed. Together, these areas cover the main inputs and conclusions that the expert system will need to reason about.',
+          'This week we also held a new meeting with Diogo Gomes, our domain expert. The main goal of the meeting was to validate the rules we had gathered up to that point. His feedback helped us confirm which rules reflect how security professionals actually assess AI systems, and gave us direction for refining the knowledge base in the following stages.',
+          'Finally, we started writing the preliminary knowledge acquisition report. This report will document the knowledge gathered from our research and from the meetings with the domain expert, and will serve as the foundation for defining the rules and reasoning processes of the expert system.'
+        ]
       }
     ],
 
@@ -119,6 +137,13 @@
             excerpt: 'The team defined the project\'s scope, explored core expert-system functionalities and met with the domain expert to prepare for knowledge acquisition.',
             tags: ['AI security', 'Expert system', 'Knowledge acquisition'],
             href: '#/reports/week-02'
+          },
+          {
+            title: 'Week 3 - Building the Knowledge Base',
+            date: 'Week 03',
+            excerpt: 'The team divided the research work into themes, validated the rules gathered so far with the domain expert and started the preliminary knowledge acquisition report.',
+            tags: ['Expert system', 'Knowledge acquisition', 'Rule validation'],
+            href: '#/reports/week-03'
           }
         ]
       }
