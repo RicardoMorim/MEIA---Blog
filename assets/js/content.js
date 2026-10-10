@@ -111,6 +111,25 @@
           'This week we also held a new meeting with Diogo Gomes, our domain expert. The main goal of the meeting was to validate the rules we had gathered up to that point. His feedback helped us confirm which rules reflect how security professionals actually assess AI systems, and gave us direction for refining the knowledge base in the following stages.',
           'Finally, we started writing the preliminary knowledge acquisition report. This report will document the knowledge gathered from our research and from the meetings with the domain expert, and will serve as the foundation for defining the rules and reasoning processes of the expert system.'
         ]
+      },
+      {
+        id: 'week-04',
+        title: 'Week 4 - From Research to Rules',
+        period: 'Week 04',
+        status: 'Published',
+        excerpt: 'The team settled the rules by modelling them as decision flowcharts, completed the preliminary knowledge acquisition report and prepared its presentation.',
+        summary: [
+          'Modelling the gathered knowledge as decision flowcharts',
+          'Completing the preliminary knowledge acquisition report',
+          'Preparing the presentation of the project objectives'
+        ],
+        paragraphs: [
+          'During the fourth week, the research carried out in the previous weeks was consolidated into a definitive set of rules. Instead of keeping that knowledge as prose, we represented it as decision flowcharts, which proved to be the form that both the team and the domain expert could read and correct directly.',
+          'Each flowchart starts from the description of an agent and asks a sequence of questions about its profile. Every decision point is one question, and the answers determine the paths to analyse, the resulting risk level, and the controls and tests to recommend. Answers that are unknown are deliberately treated as the worst case, so that missing information never produces a false sense of safety.',
+          'Five flowcharts were produced. Four of them cover threats: the agent\'s access to sensitive data, memory and context poisoning, prompt injection, and unexpected code execution. The fifth covers compliance with the transparency obligations of the EU AI Act, and differs from the others in that it does not assign a risk level. Each of its branches ends instead in whether an obligation is applicable, not applicable, or undetermined for the system being assessed.',
+          'With the rules settled, we completed the preliminary knowledge acquisition report. It documents the sources used, the sessions held with the domain expert, and the representation of the knowledge gathered so far. We also prepared a presentation of the project objectives for the class and the course lecturer.',
+          'The knowledge is now in a form that can be formalised. The next stage moves from diagrams to an inference engine, where the rules will be implemented, checked for consistency and refined against what the system actually concludes.'
+        ]
       }
     ],
 
@@ -144,6 +163,13 @@
             excerpt: 'The team divided the research work into themes, validated the rules gathered so far with the domain expert and started the preliminary knowledge acquisition report.',
             tags: ['Expert system', 'Knowledge acquisition', 'Rule validation'],
             href: '#/reports/week-03'
+          },
+          {
+            title: 'Week 4 - From Research to Rules',
+            date: 'Week 04',
+            excerpt: 'The team settled the rules by modelling them as decision flowcharts, completed the preliminary knowledge acquisition report and prepared its presentation.',
+            tags: ['Expert system', 'Knowledge representation', 'Decision flowcharts'],
+            href: '#/reports/week-04'
           }
         ]
       }
