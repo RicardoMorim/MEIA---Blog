@@ -130,6 +130,44 @@
           'With the rules settled, we completed the preliminary knowledge acquisition report. It documents the sources used, the sessions held with the domain expert, and the representation of the knowledge gathered so far. We also prepared a presentation of the project objectives for the class and the course lecturer.',
           'The knowledge is now in a form that can be formalised. The next stage moves from diagrams to an inference engine, where the rules will be implemented, checked for consistency and refined against what the system actually concludes.'
         ]
+      },
+      {
+        id: 'week-05',
+        title: 'Week 5 - From Diagrams to a Working System',
+        period: 'Week 05',
+        status: 'Published',
+        excerpt: 'The team turned the flowcharts into a single shared specification, implemented the same knowledge twice in Prolog and Drools, and built the interface that runs both.',
+        summary: [
+          'Writing the flowcharts as one shared specification of the rules',
+          'Implementing the same knowledge independently in Prolog and in Drools',
+          'Revisiting how the system should treat unknown answers'
+        ],
+        paragraphs: [
+          'During the fifth week we moved from diagrams to a working system. The first step was to write the flowcharts as a single shared specification: every question, every decision, every conclusion and every recommendation was given a stable identifier, so that both implementations would describe the same thing and could later be compared element by element.',
+          'With that specification in place, the same knowledge was implemented twice, independently. One implementation uses Prolog, where the decision trees are described as facts and the reasoning searches for a proof. The other uses Drools, where each decision and each branch becomes a rule that fires when the conditions hold. Neither implementation reads the shared specification to reach its conclusions, and neither sees the result of the other. Writing the knowledge twice is deliberate: if the two reach the same conclusion by different routes, we have reason to trust it.',
+          'Implementing the rules made us revisit one of the decisions taken the week before. We had planned to treat an unknown answer as the worst case, but once the rules were written we saw that this hides the difference between a risk we identified and a risk we simply could not rule out. The system now explores every possibility an unknown answer allows. When they all lead to the same conclusion, it states it. When they do not, the result is reported as inconclusive, with the worst case shown separately and the missing information named.',
+          'We also built the interface. It asks about the agent, hides the questions that no longer apply, and presents the two opinions side by side, each with the reasoning that produced it. The system never picks a winner between the two and never merges them.',
+          'By the end of the week the system was running end to end. The next stage is to show that it is right, not only that it works.'
+        ]
+      },
+      {
+        id: 'week-06',
+        title: 'Week 6 - Validation and Delivery',
+        period: 'Week 06',
+        status: 'Published',
+        excerpt: 'The team finished and validated the system, wrote the final report, prepared the pitch, and delivered both the project and the report.',
+        summary: [
+          'Completing the comparison and the explanations shown to the user',
+          'Validating the system against reference scenarios reviewed with the domain expert',
+          'Delivering the final project and the final report, and preparing the pitch'
+        ],
+        paragraphs: [
+          'The sixth week was about finishing the system, being able to stand behind it, and delivering it. We completed the part that compares the two opinions and the part that explains them. For every conclusion, the system now shows the path it followed, what to do about it, and what information is missing when an answer was unknown.',
+          'Validation was the main effort. We built a set of reference scenarios describing different agents, each with the result we expected for every assessment, and reviewed them with our domain expert. Two different things then had to be checked, and it is worth separating them: whether the two implementations agree with each other, and whether they agree with the expected result. Agreement alone proves nothing: both could share the same mistake. Only the second check tells us the system is right.',
+          'Running the scenarios confirmed both: the two implementations reached identical conclusions in every case, and every conclusion matched what we expected. That gave us the confidence to consider the implementation closed and to submit the project.',
+          'In parallel, we wrote and delivered the final report, documenting the knowledge gathered, how it was represented, the decisions taken during implementation and what the system deliberately does not do. We were explicit about its limits: it assesses the answers it is given, it does not observe the agent, and it is not a substitute for a formal compliance assessment.',
+          'With the project and the report delivered, the remaining work was the pitch. The challenge there is different from writing a report: in a few minutes we have to show why the problem matters, what the system concludes about a real agent, and why the explanation behind the conclusion is as important as the conclusion itself.'
+        ]
       }
     ],
 
@@ -170,6 +208,20 @@
             excerpt: 'The team settled the rules by modelling them as decision flowcharts, completed the preliminary knowledge acquisition report and prepared its presentation.',
             tags: ['Expert system', 'Knowledge representation', 'Decision flowcharts'],
             href: '#/reports/week-04'
+          },
+          {
+            title: 'Week 5 - From Diagrams to a Working System',
+            date: 'Week 05',
+            excerpt: 'The team turned the flowcharts into a single shared specification, implemented the same knowledge twice in Prolog and Drools, and built the interface that runs both.',
+            tags: ['Expert system', 'Prolog', 'Drools'],
+            href: '#/reports/week-05'
+          },
+          {
+            title: 'Week 6 - Validation and Delivery',
+            date: 'Week 06',
+            excerpt: 'The team finished and validated the system, wrote the final report, prepared the pitch, and delivered both the project and the report.',
+            tags: ['Validation', 'Final report', 'Delivery', 'Pitch'],
+            href: '#/reports/week-06'
           }
         ]
       }
