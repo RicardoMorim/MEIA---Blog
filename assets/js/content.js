@@ -168,7 +168,38 @@
           'In parallel, we wrote and delivered the final report, documenting the knowledge gathered, how it was represented, the decisions taken during implementation and what the system deliberately does not do. We were explicit about its limits: it assesses the answers it is given, it does not observe the agent, and it is not a substitute for a formal compliance assessment.',
           'With the project and the report delivered, the remaining work was the pitch. The challenge there is different from writing a report: in a few minutes we have to show why the problem matters, what the system concludes about a real agent, and why the explanation behind the conclusion is as important as the conclusion itself.'
         ]
-      }
+      },
+      {
+          id: 'ch2-week-01',
+          title: 'Week 1 - A New Challenge',
+          period: 'Challenge 02 · Week 01',
+          status: 'Published',
+          excerpt: 'The team started the second challenge, reviewed its requirements and brainstormed problems that combine machine learning with planning and decision making.',
+          summary: [
+            'Kick-off of the second challenge and review of its requirements',
+            'Brainstorming problems that combine machine learning with planning and decision making',
+            'Discussing candidate ideas and the criteria for choosing a project'
+          ],
+          paragraphs: [
+            'This week marked the start of our second challenge. Unlike the first one, which focused on knowledge-based expert systems, this challenge brings together two new courses: Machine Learning and Planning and Decision Making. The goal is no longer to encode expert knowledge by hand, but to learn from data and use what is learned to plan and support decisions.',
+            'We began by reviewing the challenge requirements and discussing what each course expects from the project. Our main concern was to find a problem where both parts are genuinely needed, rather than two separate pieces placed side by side.',
+            'Most of the week was spent brainstorming. Each member brought ideas from their own background, and we discussed them against three criteria: the availability of suitable data, the existence of a real decision to support, and the relevance of the problem.',
+            'No project has been chosen yet. In the coming week we will look deeper into the most promising ideas, check whether suitable data is available and discuss them with the course lecturers before committing to a direction.'
+          ]
+        },
+        // {
+        //   id: 'ch2-week-02',
+        //   title: 'Week 2 -',
+        //   period: 'Challenge 02 · Week 02',
+        //   status: 'Published',
+        //   excerpt: '',
+        //   summary: [
+        //     ''
+        //   ],
+        //   paragraphs: [
+        //     ''
+        //   ]
+        // }
     ],
 
     projects: [
@@ -177,7 +208,7 @@
         name: 'Challenge 01',
         course: 'MEIA · 2026/27',
         period: '2026/27',
-        status: 'In progress',
+        status: 'Completed',
         short: 'An expert system for AI threat modelling and compliance assessment.',
         long: 'We are developing an expert system that analyses AI systems, identifies potential security threats and recommends suitable controls and security tests.',
         weeks: [
@@ -224,7 +255,43 @@
             href: '#/reports/week-06'
           }
         ]
-      }
+      },
+      {
+        id: 'challenge-02',
+        name: 'Challenge 02',
+        course: 'MEIA · 2026/27',
+        period: '2026/27',
+        status: 'In progress',
+        short: 'Exploring problems that combine machine learning with planning and decision making.',
+        long: 'We are exploring possible problems where machine learning and planning and decision-making methods can work together, before defining the project.',
+        weeks: [
+          {
+            title: 'Week 1 - A New Challenge',
+            date: 'Week 01',
+            excerpt: 'The team started the second challenge, reviewed its requirements and brainstormed problems that combine machine learning with planning and decision making.',
+            tags: ['Machine learning', 'Planning and decision making', 'Project exploration'],
+            href: '#/reports/ch2-week-01'
+          }
+        ]
+      },
+      // {
+      //   id: 'challenge-02',
+      //   name: 'Challenge 02',
+      //   course: 'MEIA · 2026/27',
+      //   period: '2026/27',
+      //   status: 'In progress',
+      //   short: '',
+      //   long: '',
+      //   weeks: [
+      //     {
+      //       title: 'Week 2 -',
+      //       date: 'Week 02',
+      //       excerpt: '',
+      //       tags: [''],
+      //       href: '#/reports/ch2-week-02'
+      //     }
+      //   ]
+      // }
     ]
   };
 })();
