@@ -59,7 +59,7 @@
       {
         id: 'week-01',
         title: 'Week 1 - Hello World',
-        period: 'Week 01',
+        period: 'Challenge 01 · Week 01',
         status: 'Published',
         excerpt: 'The team got to know one another, explored AI security challenges and defined the initial direction of the project.',
         summary: [
@@ -77,7 +77,7 @@
       {
         id: 'week-02',
         title: 'Week 2 - Defining the Direction',
-        period: 'Week 02',
+        period: 'Challenge 01 · Week 02',
         status: 'Published',
         excerpt: 'The team defined the project\'s scope, explored core expert-system functionalities and met with the domain expert to prepare for knowledge acquisition.',
         summary: [
@@ -97,7 +97,7 @@
       {
         id: 'week-03',
         title: 'Week 3 - Building the Knowledge Base',
-        period: 'Week 03',
+        period: 'Challenge 01 · Week 03',
         status: 'Published',
         excerpt: 'The team divided the research work into themes, validated the rules gathered so far with the domain expert and started the preliminary knowledge acquisition report.',
         summary: [
@@ -115,7 +115,7 @@
       {
         id: 'week-04',
         title: 'Week 4 - From Research to Rules',
-        period: 'Week 04',
+        period: 'Challenge 01 · Week 04',
         status: 'Published',
         excerpt: 'The team settled the rules by modelling them as decision flowcharts, completed the preliminary knowledge acquisition report and prepared its presentation.',
         summary: [
@@ -134,7 +134,7 @@
       {
         id: 'week-05',
         title: 'Week 5 - From Diagrams to a Working System',
-        period: 'Week 05',
+        period: 'Challenge 01 · Week 05',
         status: 'Published',
         excerpt: 'The team turned the flowcharts into a single shared specification, implemented the same knowledge twice in Prolog and Drools, and built the interface that runs both.',
         summary: [
@@ -153,7 +153,7 @@
       {
         id: 'week-06',
         title: 'Week 6 - Validation and Delivery',
-        period: 'Week 06',
+        period: 'Challenge 01 · Week 06',
         status: 'Published',
         excerpt: 'The team finished and validated the system, wrote the final report, prepared the pitch, and delivered both the project and the report.',
         summary: [
