@@ -187,19 +187,38 @@
             'No project has been chosen yet. In the coming week we will look deeper into the most promising ideas, check whether suitable data is available and discuss them with the course lecturers before committing to a direction.'
           ]
         },
-        // {
-        //   id: 'ch2-week-02',
-        //   title: 'Week 2 -',
-        //   period: 'Challenge 02 · Week 02',
-        //   status: 'Published',
-        //   excerpt: '',
-        //   summary: [
-        //     ''
-        //   ],
-        //   paragraphs: [
-        //     ''
-        //   ]
-        // }
+      {
+        id: 'ch2-week-02',
+        title: 'Week 2 - Defining the Project',
+        period: 'Challenge 02 · Week 02',
+        status: 'Published',
+        excerpt: 'The team defined the project topic, focused on removing prompt injections from documents processed by AI agents, and outlined the approach for each of its components.',
+        summary: [
+          'Definition of the project topic and the problem it addresses',
+          'Definition of the classifier and identification of candidate datasets',
+          'Initial formulation of the search and decision problems'
+        ],
+        paragraphs: [
+          'During the second week, we defined the topic of our project. AI agents often process emails, documents and web pages that may contain hidden malicious instructions, an attack known as prompt injection. When an injection is detected, the usual options are to block the entire document, losing the useful information it contains, or to allow it, leaving the agent exposed to the attack. We propose an intermediate approach, in which only the malicious sentences are removed and the rest of the document is passed to the agent.',
+          'For the Machine Learning component, we will develop a classifier, based on classical methods, that estimates the probability of a text containing a prompt injection. Different text representations and learning algorithms will be compared. We also identified candidate public datasets on Hugging Face and GitHub, including labelled sets of benign and malicious texts for training, and datasets such as BIPIA, in which the position of each injection is known, for evaluating the removal.',
+          'For the Planning and Decision Making component, cleaning a document will be formulated as a search problem. Each state corresponds to the document with a subset of its sentences removed, each action removes one more sentence, the goal is reached when the probability estimated by the classifier falls below the classification threshold, and the cost increases with the number of sentences removed. This formulation is only meaningful because the classifier evaluates the whole document, or windows of several sentences, so removing one sentence changes the context of the others. If each sentence were classified in isolation, it would be enough to remove those above the threshold, without any search. Greedy best-first search will be used as a baseline and compared with other algorithms covered in the course, such as A*, simulated annealing and genetic algorithms.',
+          'The second part of this component is a decision model that determines, for each document, whether it should be allowed, cleaned, sent for human review or blocked. Each option has an associated cost and human review has limited capacity, which makes the decisions interdependent. This problem will be formulated as a linear programming model, similar to the transportation and assignment problems, allowing different scenarios to be analysed by varying the costs, the threshold and the review capacity.',
+          'The next step is to prepare the datasets and develop a first version of the classifier, on which both the search and the decision model depend.'
+        ]
+      },
+      // {
+      //   id: 'ch2-week-03',
+      //   title: 'Week 3 -',
+      //   period: 'Challenge 02 · Week 03',
+      //   status: 'Published',
+      //   excerpt: '',
+      //   summary: [
+      //     ''
+      //   ],
+      //   paragraphs: [
+      //     ''
+      //   ]
+      // }
     ],
 
     projects: [
@@ -262,8 +281,8 @@
         course: 'MEIA · 2026/27',
         period: '2026/27',
         status: 'In progress',
-        short: 'Exploring problems that combine machine learning with planning and decision making.',
-        long: 'We are exploring possible problems where machine learning and planning and decision-making methods can work together, before defining the project.',
+        short: 'A system for removing prompt injections from documents processed by AI agents.',
+        long: 'We are developing a system that detects prompt injections in documents processed by AI agents and removes only the malicious sentences, combining a machine learning classifier with search algorithms and a linear programming decision model.',
         weeks: [
           {
             title: 'Week 1 - A New Challenge',
@@ -271,27 +290,23 @@
             excerpt: 'The team started the second challenge, reviewed its requirements and brainstormed problems that combine machine learning with planning and decision making.',
             tags: ['Machine learning', 'Planning and decision making', 'Project exploration'],
             href: '#/reports/ch2-week-01'
-          }
+          },
+          {
+            title: 'Week 2 - Defining the Project',
+            date: 'Week 02',
+            excerpt: 'The team defined the project topic, focused on removing prompt injections from documents processed by AI agents, and outlined the approach for each of its components.',
+            tags: ['Prompt injection', 'Text classification', 'Search', 'Linear programming'],
+            href: '#/reports/ch2-week-02'
+          },
+          // {
+          //   title: 'Week 3 -',
+          //   date: 'Week 03',
+          //   excerpt: '',
+          //   tags: [''],
+          //   href: '#/reports/ch2-week-03'
+          // }
         ]
-      },
-      // {
-      //   id: 'challenge-02',
-      //   name: 'Challenge 02',
-      //   course: 'MEIA · 2026/27',
-      //   period: '2026/27',
-      //   status: 'In progress',
-      //   short: '',
-      //   long: '',
-      //   weeks: [
-      //     {
-      //       title: 'Week 2 -',
-      //       date: 'Week 02',
-      //       excerpt: '',
-      //       tags: [''],
-      //       href: '#/reports/ch2-week-02'
-      //     }
-      //   ]
-      // }
+      }
     ]
   };
 })();
